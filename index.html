@@ -104,6 +104,8 @@
           body: `name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}`
         });
 
+        alert("req sent forward to api");
+
         const result = await response.json();
 
         if (result.result === 'success') {
