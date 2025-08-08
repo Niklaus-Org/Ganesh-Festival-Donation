@@ -5,66 +5,14 @@
   <title>Ganesh Festival Donation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff7e6;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-
-    header {
-      background-color: #ff9933;
-      color: white;
-      padding: 20px;
-      font-size: 28px;
-      font-weight: bold;
-    }
-
-    .form-container {
-      margin: 40px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-      max-width: 500px;
-    }
-
-    input {
-      padding: 12px;
-      margin: 10px;
-      width: 80%;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button {
-      background-color: #28a745;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .qr-container {
-      margin-top: 20px;
-    }
-
-    .thank-you {
-      font-size: 18px;
-      color: green;
-      margin-top: 20px;
-    }
-
-    footer {
-      margin-top: 40px;
-      font-size: 14px;
-      color: #888;
-    }
+    body { font-family: 'Segoe UI', sans-serif; background-color: #fff7e6; margin: 0; padding: 0; text-align: center; }
+    header { background-color: #ff9933; color: white; padding: 20px; font-size: 28px; font-weight: bold; }
+    .form-container { margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 0 12px rgba(0,0,0,0.1); max-width: 500px; }
+    input { padding: 12px; margin: 10px; width: 80%; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
+    button { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+    .qr-container { margin-top: 20px; }
+    .thank-you { font-size: 18px; color: green; margin-top: 20px; }
+    footer { margin-top: 40px; font-size: 14px; color: #888; }
   </style>
 </head>
 <body>
@@ -95,39 +43,39 @@
         return;
       }
 
-      const scriptURL = "https://script.google.com/macros/s/AKfycby4dD3-48QXIU635IEJXOCJzSWU46k2msIMBDQVaIewH9DuIinsHKsdngtqhjs8zt3ETQ/exec";
+      // Your Google Apps Script Web App URL (optional for logging)
+      const scriptURL = "YOUR_DEPLOYED_WEB_APP_URL"; // leave empty if not logging
 
-      try {
-        const response = await fetch(scriptURL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}`
-        });
-
-        alert("req sent forward to api");
-
-        const result = await response.json();
-
-        if (result.result === 'success') {
-          const upiID = "vamsireddygangireddy143@ybl";
-          const upiQR = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
-
-          qr.innerHTML = `
-            <h3>Scan to Pay</h3>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(upiQR)}&size=200x200" alt="UPI QR Code">
-          `;
-
-          thankYou.innerHTML = `🎉 Thank you, <strong>${name}</strong>! Your ₹${amount} donation is appreciated. 🙏`;
-
-          document.getElementById('name').value = '';
-          document.getElementById('amount').value = '';
-        } else {
-          alert("Error: " + result.message);
+      if (scriptURL) {
+        try {
+          const response = await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}`
+          });
+          const result = await response.json();
+          if (result.result !== 'success') {
+            console.warn("Logging failed:", result.message);
+          }
+        } catch (err) {
+          console.warn("Logging skipped / failed:", err);
         }
-      } catch (err) {
-        alert("Failed to connect to the server. Please check your internet or deployment." + err);
-        console.error(err);
       }
+
+      // Generate UPI QR
+      const upiID = "vamsireddygangireddy143@ybl";
+      const upiQR = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
+
+      qr.innerHTML = `
+        <h3>Scan to Pay</h3>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(upiQR)}&size=200x200" alt="UPI QR Code">
+      `;
+
+      thankYou.innerHTML = `🎉 Thank you, <strong>${name}</strong>! Your ₹${amount} donation is appreciated. 🙏`;
+
+      document.getElementById('name').value = '';
+      document.getElementById('amount').value = '';
     }
   </script>
 
