@@ -125,7 +125,7 @@
           alert("Error: " + result.message);
         }
       } catch (err) {
-        alert("Failed to connect to the server. Please check your internet or deployment.");
+        alert("Failed to connect to the server. Please check your internet or deployment." + err);
         console.error(err);
       }
     }
